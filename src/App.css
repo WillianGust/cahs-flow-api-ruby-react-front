@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  /* background-color: #282c34; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -35,4 +35,21 @@
   to {
     transform: rotate(360deg);
   }
+}
+.divCards{
+  display: flex;
+  justify-content: space-between;
+}
+
+.divBox{
+  display: inline-block!important;
+  width: 33%!important;
+  height: 140px!important;
+}
+.divBox:nth-child(3){
+  background-color: rgba(254, 33, 33, 0.3)!important;
+}
+
+.btnAdd{
+  text-align: end!important;
 }
