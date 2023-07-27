@@ -45,6 +45,7 @@
   display: inline-block!important;
   width: 33%!important;
   height: 140px!important;
+  margin-left: 3px;
 }
 .divBox:nth-child(3){
   background-color: rgba(254, 33, 33, 0.3)!important;

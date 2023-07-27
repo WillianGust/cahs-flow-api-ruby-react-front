@@ -1,26 +1,83 @@
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  const [extract, setExtract] = useState([]);
+   // Carregar os dados da API ao montar o componente
+   useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Função para carregar os dados da API
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/cashes');
+      const data = await response.json();
+      setExtract(data.extract);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // Função para excluir um registro
+  const handleDelete = async (id) => {
+    try {
+      await fetch(`http://localhost:3001/api/cashes/${id}`, {
+        method: 'DELETE',
+      });
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting record:', error);
+    }
+  };
+
+  // Função para adicionar um novo registro (exemplo)
+  const handleAdd = async () => {
+    try {
+      const newRecord = {
+        tipo: 'Nova transação',
+        value: 100,
+        status: 0,
+      };
+
+      await fetch('http://localhost:3001/api/cashes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRecord),
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error adding record:', error);
+    }
+  };
+
   return (
     <div>
-      <div className="divCards">
-        <div className="card mb-3 divBox" style={{ width: '18rem' }}>
-          <div className="card-body">
-            <h5 className="card-header mb-3">Total value</h5>
-            <h6 className="card-subtitle mb-2 text-body-secondary">$19.950,20</h6>
-          </div>
+      <div className="card mb-3 divBox" style={{ width: '18rem' }}>
+        <div className="card-body">
+          <h5 className="card-header mb-3">Total value</h5>
+          <h6 className="card-subtitle mb-2 text-body-secondary">
+            ${extract.total_value}
+          </h6>
         </div>
-        <div className="card mb-3 divBox" style={{ width: '18rem' }}>
-          <div className="card-body">
-            <h5 className="card-header mb-3">Revenues</h5>
-            <h6 className="card-subtitle mb-2 text-body-secondary">$20.750,20</h6>
-          </div>
+      </div>
+      <div className="card mb-3 divBox" style={{ width: '18rem' }}>
+        <div className="card-body">
+          <h5 className="card-header mb-3">Revenues</h5>
+          <h6 className="card-subtitle mb-2 text-body-secondary">
+            ${extract.revenues}
+          </h6>
         </div>
-        <div className="card mb-3 divBox" style={{ width: '18rem' }}>
-          <div className="card-body">
-            <h5 className="card-header mb-3">Expenses</h5>
-            <h6 className="card-subtitle mb-2 text-body-secondary">- $800,00</h6>
-          </div>
+      </div>
+      <div className="card mb-3 divBox" style={{ width: '18rem' }}>
+        <div className="card-body">
+          <h5 className="card-header mb-3">Expenses</h5>
+          <h6 className="card-subtitle mb-2 text-body-secondary">
+            - ${extract.expenses}
+          </h6>
         </div>
       </div>
 
@@ -42,9 +99,9 @@ function App() {
             </button>
           </div>
           <div className="col-2 btnAdd">
-            <a href="/add" className="btn btn-primary mb-3">
+            <button className="btn btn-primary mb-3" onClick={handleAdd}>
               Add
-            </a>
+            </button>
           </div>
         </form>
       </div>
@@ -60,65 +117,20 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Recebimento de pagamento</td>
-              <td>$ 500,00</td>
-              <td style={{ backgroundColor: '#00c3ff52' }}>Credit</td>
-              <td style={{ width: '20px' }}>
-                <a
-                  href="/delete/7"
-                  className="btn btn-outline-danger"
-                  onClick={() => window.confirm('Confirm?')}
-                >
-                  Delete
-                </a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Pagamento de fornecedor</td>
-              <td>- $ 800,00</td>
-              <td style={{ backgroundColor: '#f4262669' }}>Debt</td>
-              <td style={{ width: '20px' }}>
-                <a
-                  href="/delete/8"
-                  className="btn btn-outline-danger"
-                  onClick={() => window.confirm('Confirm?')}
-                >
-                  Delete
-                </a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Transferência bancária</td>
-              <td>$ 250,20</td>
-              <td style={{ backgroundColor: '#00c3ff52' }}>Credit</td>
-              <td style={{ width: '20px' }}>
-                <a
-                  href="/delete/9"
-                  className="btn btn-outline-danger"
-                  onClick={() => window.confirm('Confirm?')}
-                >
-                  Delete
-                </a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Venda carro</td>
-              <td>$ 20.000,00</td>
-              <td style={{ backgroundColor: '#00c3ff52' }}>Credit</td>
-              <td style={{ width: '20px' }}>
-                <a
-                  href="/delete/10"
-                  className="btn btn-outline-danger"
-                  onClick={() => window.confirm('Confirm?')}
-                >
-                  Delete
-                </a>
-              </td>
-            </tr>
+            {extract.map((item) => (
+              <tr key={item.id}>
+                <td>{item.tipo}</td>
+                <td>${item.value}</td>
+                <td style={{ backgroundColor: item.status === 0 ? '#00c3ff52' : '#f4262669' }}>
+                  {item.status === 0 ? 'Credit' : 'Debt'}
+                </td>
+                <td style={{ width: '20px' }}>
+                  <button className="btn btn-outline-danger" onClick={() => handleDelete(item.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
