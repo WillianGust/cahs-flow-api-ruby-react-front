@@ -3,6 +3,9 @@ import './App.css';
 
 function App() {
   const [extract, setExtract] = useState([]);
+  const [total_value, setTotalValue] = useState([]);
+  const [revenues, setRevenues] = useState([]);
+  const [expenses, setExpenses] = useState([]);
    // Carregar os dados da API ao montar o componente
    useEffect(() => {
     fetchData();
@@ -14,6 +17,9 @@ function App() {
       const response = await fetch('http://localhost:3001/api/cashes');
       const data = await response.json();
       setExtract(data.extract);
+      setTotalValue(data.total_value);
+      setRevenues(data.revenues);
+      setExpenses(data.expenses);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -21,13 +27,15 @@ function App() {
 
   // Função para excluir um registro
   const handleDelete = async (id) => {
-    try {
-      await fetch(`http://localhost:3001/api/cashes/${id}`, {
-        method: 'DELETE',
-      });
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting record:', error);
+    if ( window.confirm("Confirm delete?" )){
+      try {
+        await fetch(`http://localhost:3001/api/cashes/${id}`, {
+          method: 'DELETE',
+        });
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting record:', error);
+      }
     }
   };
 
@@ -60,7 +68,7 @@ function App() {
         <div className="card-body">
           <h5 className="card-header mb-3">Total value</h5>
           <h6 className="card-subtitle mb-2 text-body-secondary">
-            ${extract.total_value}
+            ${extract.length > 0 ? total_value.toFixed(2) : '0.00'}
           </h6>
         </div>
       </div>
@@ -68,7 +76,7 @@ function App() {
         <div className="card-body">
           <h5 className="card-header mb-3">Revenues</h5>
           <h6 className="card-subtitle mb-2 text-body-secondary">
-            ${extract.revenues}
+            ${extract.length > 0 ? revenues.toFixed(2) : '0.00'}
           </h6>
         </div>
       </div>
@@ -76,22 +84,15 @@ function App() {
         <div className="card-body">
           <h5 className="card-header mb-3">Expenses</h5>
           <h6 className="card-subtitle mb-2 text-body-secondary">
-            - ${extract.expenses}
+            - ${extract.length > 0 ? expenses.toFixed(2) : '0.00'}
           </h6>
         </div>
       </div>
-
+    {/* Search input add new */}
       <div>
         <form className="row g-3 justify-content-center">
           <div className="col-6">
-            <input
-              type="text"
-              className="form-control"
-              name="tipo"
-              value=""
-              id="tipo"
-              placeholder="Search..."
-            />
+            <input type="text" className="form-control" name="tipo" id="tipo" placeholder="Search..." />
           </div>
           <div className="col-4">
             <button type="submit" className="btn btn-primary mb-3">
@@ -125,9 +126,7 @@ function App() {
                   {item.status === 0 ? 'Credit' : 'Debt'}
                 </td>
                 <td style={{ width: '20px' }}>
-                  <button className="btn btn-outline-danger" onClick={() => handleDelete(item.id)}>
-                    Delete
-                  </button>
+                  <button className="btn btn-outline-danger" onClick={() => handleDelete(item.id)}>Delete</button>
                 </td>
               </tr>
             ))}
