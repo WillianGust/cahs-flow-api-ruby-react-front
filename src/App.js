@@ -37,7 +37,7 @@ function App() {
 
     const searchValue = document.querySelector("input[name='tipo']").value;
     try {
-      const response = await fetch(`http://localhost:3001/api/cashes?tipo=${encodeURIComponent(searchValue)} `)
+      const response = await fetch(`${apiUrl}/api/cashes?tipo=${encodeURIComponent(searchValue)} `)
       const data = await response.json();
       setListCash(data);
     } catch(error){
@@ -49,7 +49,7 @@ function App() {
   const handleDelete = async (id) => {
     if ( window.confirm("Confirm delete?" )){
       try {
-        await fetch(`http://localhost:3001/api/cashes/${id}`, {
+        await fetch(`${apiUrl}/api/cashes/${id}`, {
           method: 'DELETE',
         });
         fetchData();
@@ -78,7 +78,7 @@ function App() {
         status: status,
       };
 
-      await fetch('http://localhost:3001/api/cashes', {
+      await fetch(`${apiUrl}/api/cashes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,10 +128,10 @@ function App() {
           <div className="col-4">
             <button type="submit" className="btn btn-primary mb-3">Search</button>
           </div>
-        </form>
         <div className="col-2 btnAdd">
           <button className="btn btn-primary mb-3" onClick={handleAdd}>Add</button>
         </div>
+        </form>
       </div>
 
       {showForm && (
