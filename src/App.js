@@ -3,6 +3,7 @@ import './App.css';
 
 
 function App() {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [extract, setExtract] = useState([]);
   const [total_value, setTotalValue] = useState([]);
   const [revenues, setRevenues] = useState([]);
@@ -16,7 +17,7 @@ function App() {
   // Função para carregar os dados da API
   const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/cashes');
+      const response = await fetch(`${apiUrl}/api/cashes`);
       const data = await response.json();
       setListCash(data);
     } catch (error) {
