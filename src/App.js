@@ -9,19 +9,36 @@ function App() {
    // Carregar os dados da API ao montar o componente
    useEffect(() => {
     fetchData();
-  }, []);
+  },[]);
 
   // Função para carregar os dados da API
   const fetchData = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/cashes');
       const data = await response.json();
-      setExtract(data.extract);
-      setTotalValue(data.total_value);
-      setRevenues(data.revenues);
-      setExpenses(data.expenses);
+      setListCash(data);
     } catch (error) {
       console.error('Error fetching data:', error);
+    }
+  };
+
+  const setListCash = (data) => {
+    setExtract(data.extract);
+    setTotalValue(data.total_value);
+    setRevenues(data.revenues);
+    setExpenses(data.expenses);
+  }
+// Função para realizar busca na pagina
+  const handleSearch = async (event) => {
+    event.preventDefault();
+
+    const searchValue = document.querySelector("input[name='tipo']").value;
+    try {
+      const response = await fetch(`http://localhost:3001/api/cashes?tipo=${encodeURIComponent(searchValue)} `)
+      const data = await response.json();
+      setListCash(data);
+    } catch(error){
+      console.error('Error to search extract: '.error);
     }
   };
 
@@ -90,21 +107,17 @@ function App() {
       </div>
     {/* Search input add new */}
       <div>
-        <form className="row g-3 justify-content-center">
+        <form onSubmit={handleSearch} className="row g-3 justify-content-right">
           <div className="col-6">
             <input type="text" className="form-control" name="tipo" id="tipo" placeholder="Search..." />
           </div>
           <div className="col-4">
-            <button type="submit" className="btn btn-primary mb-3">
-              Search
-            </button>
-          </div>
-          <div className="col-2 btnAdd">
-            <button className="btn btn-primary mb-3" onClick={handleAdd}>
-              Add
-            </button>
+            <button type="submit" className="btn btn-primary mb-3">Search</button>
           </div>
         </form>
+        <div className="col-2 btnAdd">
+          <button className="btn btn-primary mb-3" onClick={handleAdd}>Add</button>
+        </div>
       </div>
 
       <div className="table-responsive">
