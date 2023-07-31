@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
+
 function App() {
   const [extract, setExtract] = useState([]);
   const [total_value, setTotalValue] = useState([]);
   const [revenues, setRevenues] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [showForm, setShowForm] = useState(false);
    // Carregar os dados da API ao montar o componente
    useEffect(() => {
     fetchData();
@@ -57,12 +59,22 @@ function App() {
   };
 
   // Função para adicionar um novo registro (exemplo)
-  const handleAdd = async () => {
+  const handleAdd = () => {
+    setShowForm(true);
+    };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+
     try {
+    const tipo = document.querySelector(".formAdd input[name='tipo']").value;
+    const valor = document.querySelector(".formAdd input[name='valor']").value;
+    const status = document.querySelector(".formAdd select[name='status']").value;
+
       const newRecord = {
-        tipo: 'Nova transação',
-        value: 100,
-        status: 0,
+        tipo: tipo,
+        value: valor,
+        status: status,
       };
 
       await fetch('http://localhost:3001/api/cashes', {
@@ -73,11 +85,12 @@ function App() {
         body: JSON.stringify(newRecord),
       });
 
-      fetchData();
-    } catch (error) {
-      console.error('Error adding record:', error);
-    }
-  };
+  fetchData();
+  setShowForm(false);
+  } catch (error) {
+    console.error('Error adding record:', error);
+  }
+};
 
   return (
     <div>
@@ -119,6 +132,29 @@ function App() {
           <button className="btn btn-primary mb-3" onClick={handleAdd}>Add</button>
         </div>
       </div>
+
+      {showForm && (
+      <form onSubmit={handleRegister} className="formAdd">
+        <div className="mb-3">
+          <label htmlFor="type" className="form-label">Type</label>
+          <input type="text" className="form-control" name="tipo" id="tipo" placeholder="Enter the type of movement" />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="value" className="form-label">Value</label>
+          <input type="number" step="0.01" min="0" className="form-control" name="valor" id="value" placeholder="Inform the value" />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="status" className="form-label">Status</label>
+          <select className="form-select" name="status" id="status">
+            <option value="0">Input</option>
+            <option value="1">Output</option>
+          </select>
+        </div>
+        <button type="submit" className="btn btn-outline-primary">Save</button>
+        <a href="/" className="btn btn-outline-danger">Cancel</a>
+      </form>)}
 
       <div className="table-responsive">
         <table className="table table-bordered table-striped table-hover">
